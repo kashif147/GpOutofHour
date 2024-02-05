@@ -1,5 +1,21 @@
+import { Container } from 'semantic-ui-react';
+import NavBar from './nav/NavBar';
+import { useState } from 'react';
+import Dashboard from '../../features/encounters/Dashboard';
+
 function App() {
-  return <h1>Welcome to your new GP Out of Hours Solution!</h1>;
+  const [formOpen, setFormOpen] = useState(false);
+  return (
+    <>
+      <NavBar setFormOpen={setFormOpen} />
+      <Container className='main'>
+        <Dashboard
+          formOpen={formOpen}
+          setFormOpen={setFormOpen}
+        />
+      </Container>
+    </>
+  );
 }
 
 export default App;
