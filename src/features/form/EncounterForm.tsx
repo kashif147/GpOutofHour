@@ -21,7 +21,7 @@ import Address from '../components/Address';
 import Contact from '../components/Contact';
 import {
   callerRelationship,
-  presentingConditions,
+  // presentingConditions,
   priority,
   genderOptions,
   coverType,
@@ -32,18 +32,24 @@ import {
 
 import { Encounter } from '../../app/types/encounter';
 import { useState } from 'react';
+import { createId } from '@paralleldrive/cuid2';
 
 type Props = {
   setFormOpen: (value: boolean) => void;
-  encounters: Encounter;
+  addEncounter: (encounter: Encounter) => void;
+  selectedEncounter: Encounter | null;
+  updateEncounter: (encounter: Encounter) => void;
 };
 
-// const encounter = encounter[0];
-// const patients = encounter.patients;
-
-export default function EncounterForm({ setFormOpen, encounters }: Props) {
-  const initialValues = {
-    encounterID: '1',
+export default function EncounterForm({
+  setFormOpen,
+  // encounters,
+  addEncounter,
+  selectedEncounter,
+  updateEncounter,
+}: Props) {
+  const initialValues = selectedEncounter ?? {
+    encounterID: '',
     callDateTime: '',
     callerIsPatient: true,
     caller: {
@@ -96,9 +102,20 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
   };
 
   const [encounter, setEncounter] = useState(initialValues);
+  const [currentEncounters, setCurrentEncounter] = useState<Encounter[]>([]);
+
+  function handleMultipatientsEncounters(encounter: Encounter) {
+    setCurrentEncounter((currentEncounters) => {
+      return [...currentEncounters, encounter];
+    });
+  }
 
   function onSubmit() {
     console.log(encounter);
+    selectedEncounter
+      ? updateEncounter({ ...selectedEncounter, ...encounter })
+      : addEncounter({ ...encounter, encounterID: createId() });
+    setFormOpen(false);
   }
 
   function handleCallDateTimeChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -111,7 +128,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
   function handleCallerIsPatientChange(e: React.ChangeEvent<HTMLInputElement>) {
     setEncounter({
       ...encounter,
-      callerIsPatient: e.target.value,
+      callerIsPatient: e.target.checked,
     });
   }
 
@@ -154,7 +171,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
       ...encounter,
       caller: {
         ...encounter.caller,
-        isCallBackNumber: e.target.value,
+        isCallBackNumber: e.target.checked,
       },
     });
   }
@@ -174,7 +191,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
       ...encounter,
       patient: {
         ...encounter.patient,
-        dobUnKnown: e.target.value,
+        dobUnKnown: e.target.checked,
       },
     });
   }
@@ -194,7 +211,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
       ...encounter,
       patient: {
         ...encounter.patient,
-        isApproxAge: e.target.value,
+        isApproxAge: e.target.checked,
       },
     });
   }
@@ -333,7 +350,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         homeLocation: {
           ...encounter.patient.homeLocation,
-          isSetToCurrentLocation: e.target.value,
+          isSetToCurrentLocation: e.target.checked,
         },
       },
     });
@@ -348,7 +365,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         homeLocation: {
           ...encounter.patient.homeLocation,
-          isBillingAddress: e.target.value,
+          isBillingAddress: e.target.checked,
         },
       },
     });
@@ -431,7 +448,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         currentLocation: {
           ...encounter.patient.currentLocation,
-          isSetToCurrentLocation: e.target.value,
+          isSetToCurrentLocation: e.target.checked,
         },
       },
     });
@@ -446,7 +463,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         currentLocation: {
           ...encounter.patient.currentLocation,
-          isBillingAddress: e.target.value,
+          isBillingAddress: e.target.checked,
         },
       },
     });
@@ -490,7 +507,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         homeContact: {
           ...encounter.patient.homeContact,
-          isCallBackNumber: e.target.value,
+          isCallBackNumber: e.target.checked,
         },
       },
     });
@@ -518,7 +535,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         mobileContact: {
           ...encounter.patient.mobileContact,
-          isCallBackNumber: e.target.value,
+          isCallBackNumber: e.target.checked,
         },
       },
     });
@@ -546,7 +563,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
         ...encounter.patient,
         otherContact: {
           ...encounter.patient.otherContact,
-          isCallBackNumber: e.target.value,
+          isCallBackNumber: e.target.checked,
         },
       },
     });
@@ -619,7 +636,7 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
     });
   }
 
-  function handleSurgeryChange(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleSurgeryChange(e: React.SyntheticEvent<HTMLElement>) {
     setEncounter({
       ...encounter,
       patient: {
@@ -632,20 +649,20 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
     });
   }
 
-  function handlePresentingComplaintsChange(
-    e: React.ChangeEvent<HTMLInputElement>
-  ) {
-    setEncounter({
-      ...encounter,
-      patient: {
-        ...encounter.patient,
-        presentingComplaints: {
-          ...encounter.patient.presentingComplaints,
-          complaint: e.target.value,
-        },
-      },
-    });
-  }
+  // function handlePresentingComplaintsChange(
+  //   e: React.ChangeEvent<HTMLInputElement>
+  // ) {
+  //   setEncounter({
+  //     ...encounter,
+  //     patient: {
+  //       ...encounter.patient,
+  //       presentingComplaints: {
+  //         ...encounter.patient.presentingComplaints,
+  //         complaint: e.target.value,
+  //       },
+  //     },
+  //   });
+  // }
 
   function handleAdditionalNotesChange(e: React.ChangeEvent<HTMLInputElement>) {
     setEncounter({
@@ -970,12 +987,12 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
                 color='orange'
               />
 
-              <Form.Select
+              {/* <Form.Select
                 multiple
                 placeholder='Presentation Conditions'
                 options={presentingConditions}
                 value={encounter.patient.presentingComplaints}
-                onChange={handlePresentingComplaintsChange}></Form.Select>
+                onChange={handlePresentingComplaintsChange}></Form.Select> */}
               <TextArea
                 rows={4}
                 placeholder='Notes'
@@ -1013,20 +1030,31 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
                     <TableHeaderCell>Age</TableHeaderCell>
                     <TableHeaderCell>Gender</TableHeaderCell>
                     <TableHeaderCell>Priority</TableHeaderCell>
+                    <TableHeaderCell></TableHeaderCell>
                   </TableRow>
                 </TableHeader>
 
                 <TableBody>
-                  {encounters.map((encounter: Encounter) => (
-                    <TableRow key={encounter.patient.patientID}>
+                  {currentEncounters.map((currentencounter: Encounter) => (
+                    <TableRow
+                      key={currentencounter.patient.patientID}
+                      selectable>
                       <TableCell>
-                        {encounter.patient.firstName +
+                        {currentencounter.patient.firstName +
                           ' ' +
-                          encounter.patient.lastName}
+                          currentencounter.patient.lastName}
                       </TableCell>
-                      <TableCell>{encounter.patient.age}</TableCell>
-                      <TableCell>{encounter.patient.gender}</TableCell>
-                      <TableCell>{encounter.patient.priority}</TableCell>
+                      <TableCell>{currentencounter.patient.age}</TableCell>
+                      <TableCell>{currentencounter.patient.gender}</TableCell>
+                      <TableCell>{currentencounter.patient.priority}</TableCell>
+                      <TableCell>
+                        <Button
+                          positive
+                          icon='edit'
+                          onClick={() =>
+                            handleMultipatientsEncounters(currentencounter)
+                          }></Button>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -1040,7 +1068,12 @@ export default function EncounterForm({ setFormOpen, encounters }: Props) {
                 paddingRight: '0.5em',
               }}>
               <Button primary>Phone Triage</Button>
-              <Button positive> Multi-Patient</Button>
+              <Button
+                positive
+                onClick={() => handleMultipatientsEncounters(encounter)}>
+                {' '}
+                Multi-Patient
+              </Button>
               <Button
                 onClick={() => setFormOpen(false)}
                 negative

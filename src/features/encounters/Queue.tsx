@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Table,
   TableHeader,
@@ -7,18 +6,27 @@ import {
   TableBody,
   TableCell,
   Container,
+  Button,
 } from 'semantic-ui-react';
+import { Encounter } from '../../app/types/encounter';
 
-// type Props = {
-//   encounters: any;
-// };
+type Props = {
+  encounters: Encounter[];
+  selectEncounter: (encounter: Encounter) => void;
+  deleteEncounter: (encounterId: string) => void;
+};
 
-export default function Queue({ encounters }: any) {
+export default function Queue({
+  encounters,
+  selectEncounter,
+  deleteEncounter,
+}: Props) {
   return (
     <Container style={{ margin: '-1.5em', width: 'auto' }}>
       <Table celled>
         <TableHeader>
           <TableRow>
+            <TableHeaderCell></TableHeaderCell>
             <TableHeaderCell>Encounter No</TableHeaderCell>
             <TableHeaderCell>Encounter Time</TableHeaderCell>
             <TableHeaderCell>Callback Number</TableHeaderCell>
@@ -27,13 +35,24 @@ export default function Queue({ encounters }: any) {
             <TableHeaderCell>First Name</TableHeaderCell>
             <TableHeaderCell>Last Name</TableHeaderCell>
             <TableHeaderCell>Patient DOB</TableHeaderCell>
-            <TableHeaderCell>Gender</TableHeaderCell>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {encounters.map((encounter: any) => (
+          {encounters.map((encounter) => (
             <TableRow key={encounter.encounterID}>
+              <TableCell>
+                <Button
+                  positive
+                  icon='edit'
+                  onClick={() => selectEncounter(encounter)}></Button>
+                <Button
+                  negative
+                  icon='delete'
+                  onClick={() =>
+                    deleteEncounter(encounter.encounterID)
+                  }></Button>
+              </TableCell>
               <TableCell>{encounter.encounterID}</TableCell>
               <TableCell>{encounter.callDateTime}</TableCell>
               <TableCell>{encounter.patient.callBackNumber}</TableCell>
@@ -42,7 +61,6 @@ export default function Queue({ encounters }: any) {
               <TableCell>{encounter.patient.firstName}</TableCell>
               <TableCell>{encounter.patient.lastName}</TableCell>
               <TableCell>{encounter.patient.dob}</TableCell>
-              <TableCell>{encounter.patient.gender}</TableCell>
             </TableRow>
           ))}
         </TableBody>
